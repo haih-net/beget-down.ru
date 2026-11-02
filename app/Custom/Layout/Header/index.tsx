@@ -7,6 +7,25 @@ import { SignOutButton } from '../../components/Auth/SignOutButton'
 import { theme } from '../../theme'
 import { useAppContext } from '../../hooks/useAppContext'
 
+import { useSectionNavigation } from '../../components/SectionNavigation/useSectionNavigation'
+
+const homeSections = [
+  { id: 'overview', label: 'Сводка' },
+  { id: 'services', label: 'Состояние услуг' },
+  { id: 'history', label: 'Хронология' },
+  { id: 'questions', label: 'Открытые вопросы' },
+  { id: 'journal', label: 'Журнал по услугам' },
+] as const
+
+const HomeMenu: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { navigation } = useSectionNavigation({
+    sections: homeSections,
+    label: 'Разделы главной',
+    actions: children,
+  })
+  return navigation
+}
+
 export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggle = useRef<HTMLButtonElement>(null)
@@ -102,43 +121,9 @@ export const Header: React.FC = () => {
     }
   }, [])
 
-  return (
-    <HeaderStyled ref={header}>
-      <div className="header-inner">
-        <div>
-          <Link to={'/'}>Главная</Link>
-        </div>
-        <button
-          ref={toggle}
-          type="button"
-          className="menu-toggle"
-          aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
-          aria-expanded={isOpen}
-          aria-controls="main-navigation"
-          onClick={toggleMenu}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <path
-              d={isOpen ? 'M18 6 6 18M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-            />
-          </svg>
-        </button>
-        <nav
-          id="main-navigation"
-          aria-label="Основная навигация"
-          data-open={isOpen}
-          onBlur={handleBlur}
-        >
-          {/* <Link
+  const actions = (
+    <>
+      {/* <Link
             to="/users"
             onClick={closeMenu}
             aria-current={
@@ -147,67 +132,110 @@ export const Header: React.FC = () => {
           >
             Пользователи
           </Link> */}
-          <button
-            type="button"
-            className="feedback-button"
-            onClick={handleFeedback}
-            disabled={!openFeedback}
-          >
-            Написать
-          </button>
-          {location.pathname === '/ai' ? (
-            <Link to="/ai" className="ai-button" onClick={closeMenu}>
-              Спросить ИИ <span aria-hidden="true">↗</span>
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="ai-button"
-              onClick={handleOpenChat}
+      <button
+        type="button"
+        className="feedback-button"
+        onClick={handleFeedback}
+        disabled={!openFeedback}
+      >
+        Написать
+      </button>
+      {location.pathname === '/ai' ? (
+        <Link to="/ai" className="ai-button" onClick={closeMenu}>
+          Спросить ИИ <span aria-hidden="true">↗</span>
+        </Link>
+      ) : (
+        <button type="button" className="ai-button" onClick={handleOpenChat}>
+          Спросить ИИ <span aria-hidden="true">↗</span>
+        </button>
+      )}
+      {!userLoading &&
+        (user ? (
+          <details className="account-menu" ref={accountMenu}>
+            <summary
+              aria-label={`Меню пользователя: ${user.fullname || user.username || 'Мой аккаунт'}`}
             >
-              Спросить ИИ <span aria-hidden="true">↗</span>
-            </button>
-          )}
-          {!userLoading &&
-            (user ? (
-              <details className="account-menu" ref={accountMenu}>
-                <summary
-                  aria-label={`Меню пользователя: ${user.fullname || user.username || 'Мой аккаунт'}`}
-                >
-                  <span className="account-avatar" aria-hidden="true">
-                    {(user.fullname || user.username || 'Я')
-                      .slice(0, 1)
-                      .toUpperCase()}
-                  </span>
-                  <span className="account-name">
-                    {user.fullname || user.username || 'Мой аккаунт'}
-                  </span>
-                  <span aria-hidden="true">⌄</span>
-                </summary>
-                <div className="account-dropdown">
-                  <p>{user.sudo ? 'Администратор' : 'Мой аккаунт'}</p>
-                  <Link to="/panel/profile" onClick={closeMenu}>
-                    Мой профиль
-                  </Link>
-                  {user.sudo && (
-                    <>
-                      <Link to="/users" onClick={closeMenu}>
-                        Пользователи
-                      </Link>
-                      <Link to="/admin-panel" onClick={closeMenu}>
-                        Админка
-                      </Link>
-                    </>
-                  )}
-                  <SignOutButton variant="ghost" />
-                </div>
-              </details>
-            ) : (
-              <Link className="signin-link" to="/signin" onClick={closeMenu}>
-                Войти
+              <span className="account-avatar" aria-hidden="true">
+                {(user.fullname || user.username || 'Я')
+                  .slice(0, 1)
+                  .toUpperCase()}
+              </span>
+              <span className="account-name">
+                {user.fullname || user.username || 'Мой аккаунт'}
+              </span>
+              <span aria-hidden="true">⌄</span>
+            </summary>
+            <div className="account-dropdown">
+              <p>{user.sudo ? 'Администратор' : 'Мой аккаунт'}</p>
+              <Link to="/panel/profile" onClick={closeMenu}>
+                Мой профиль
               </Link>
-            ))}
-        </nav>
+              {user.sudo && (
+                <>
+                  <Link to="/users" onClick={closeMenu}>
+                    Пользователи
+                  </Link>
+                  <Link to="/admin-panel" onClick={closeMenu}>
+                    Админка
+                  </Link>
+                </>
+              )}
+              <SignOutButton variant="ghost" />
+            </div>
+          </details>
+        ) : (
+          <Link className="signin-link" to="/signin" onClick={closeMenu}>
+            Войти
+          </Link>
+        ))}
+    </>
+  )
+  return (
+    <HeaderStyled ref={header}>
+      <div className="header-inner">
+        <div>
+          <Link to={'/'}>Главная</Link>
+        </div>
+        {location.pathname === '/' ? (
+          <HomeMenu>{actions}</HomeMenu>
+        ) : (
+          <>
+            <button
+              ref={toggle}
+              type="button"
+              className="menu-toggle"
+              aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-expanded={isOpen}
+              aria-controls="main-navigation"
+              onClick={toggleMenu}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path
+                  d={
+                    isOpen ? 'M18 6 6 18M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'
+                  }
+                />
+              </svg>
+            </button>
+            <nav
+              id="main-navigation"
+              aria-label="Основная навигация"
+              data-open={isOpen}
+              onBlur={handleBlur}
+            >
+              {actions}
+            </nav>
+          </>
+        )}
       </div>
     </HeaderStyled>
   )
