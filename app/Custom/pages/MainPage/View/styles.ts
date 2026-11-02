@@ -114,7 +114,7 @@ export const MainPageViewStyled = styled.div`
   .gantt-axis span {
     position: absolute;
   }
-  .gantt-axis span:nth-child(2) {
+  .gantt-axis .midday {
     transform: translateX(-50%);
   }
   .gantt-axis span:last-child {
@@ -123,7 +123,7 @@ export const MainPageViewStyled = styled.div`
   .track {
     height: 0.7rem;
     position: relative;
-    background: #2c4854;
+    background: #667580;
     border-radius: 0.2rem;
     overflow: hidden;
   }
@@ -131,6 +131,14 @@ export const MainPageViewStyled = styled.div`
     position: absolute;
     inset-block: 0;
     background: var(--phase);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .track span,
+    .gantt-axis .midday {
+      transition:
+        left 650ms ease-out,
+        right 650ms ease-out;
+    }
   }
   [data-phase='down'] {
     --phase: #ff746f;

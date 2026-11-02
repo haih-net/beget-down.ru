@@ -1,6 +1,7 @@
 import { Diagnostics } from './Diagnostics'
 import { Recovery } from './Recovery'
 import type * as React from 'react'
+import { useEffect, useState } from 'react'
 import { ServiceStatus } from './ServiceStatus'
 import { MainPageViewStyled } from './styles'
 
@@ -17,28 +18,28 @@ interface ServiceCard {
 const services: readonly ServiceCard[] = [
   {
     name: 'DNS доменов',
-    status: ServiceStatus.ProviderReport,
-    statusText: 'Beget сообщает о работах',
+    status: ServiceStatus.PartialAvailability,
+    statusText: 'Два NS отдают A-записи',
     detail:
       'У клиентов возникали перебои с открытием сайтов по имени. В 15:43 Beget назвал NS-серверы первым приоритетом.',
     forecast:
-      '19:43–20:43 МСК 2 ноября — окно, рассчитанное по оценке Beget (4–5 часов). Подтверждения запуска всех NS к 20:20 не было.',
+      'В 23:36 оба NS ответили для beget.ru, в 23:54 — для beget.ru и radimax.ru. Публикация новых записей и исполнение заявок на смену NS пока не подтверждены.',
   },
   {
-    name: 'Панель и личный кабинет',
+    name: 'Панель, личный кабинет и API',
     status: ServiceStatus.NoResponse,
     statusText: 'Нет ответа при проверке',
     detail:
-      'Утром при входе наблюдали HTTP 502 Bad Gateway. В 20:20 МСК HTTPS-запрос к cp.beget.com из нашей сети завершился по тайм-ауту.',
+      'Утром при входе наблюдали HTTP 502 Bad Gateway. В 20:20 панель не ответила. В 23:54 запросы к cp.beget.com и api.beget.com из нашей сети также завершились без HTTP-ответа за 6 секунд.',
     forecast:
       'Когда панель недоступна, через неё нельзя сменить A-запись и направить домен на резервный сервер. Срок восстановления управления Beget не назвал.',
   },
   {
     name: 'Сайты на хостинге',
     status: ServiceStatus.ReportedOutage,
-    statusText: 'Недоступность по наблюдениям СМИ',
+    statusText: 'Жалобы и вечерняя проверка двух сайтов',
     detail:
-      'Посетители не могли открыть размещённые у Beget сайты. «Код Дурова» отдельно проверил сайт системы маркировки «Честный знак». Доля доступных сайтов к вечеру неизвестна.',
+      'Посетители не могли открыть размещённые у Beget сайты. «Код Дурова» отдельно проверил сайт системы маркировки «Честный знак». В 23:54 beget.ru и radimax.ru не дали HTTP-ответа из нашей сети за 6 секунд. Доля доступных сайтов неизвестна.',
     forecast:
       'Окно для DNS касается только разрешения имён. Время запуска веб-серверов и приложений Beget не сообщил.',
   },
@@ -47,7 +48,7 @@ const services: readonly ServiceCard[] = [
     status: ServiceStatus.ReportedOutage,
     statusText: 'Жалобы на подключение',
     detail:
-      'Клиенты сообщали, что не могут подключиться к виртуальным машинам. В сводке Beget к 15:43 отсутствует подтверждение запуска VPS.',
+      'Клиенты сообщали, что не могут подключиться к виртуальным машинам. К вечернему срезу подтверждения массового запуска VPS не найдено.',
     forecast:
       'Сроки по виртуальным машинам и очередь запуска по площадкам не опубликованы.',
   },
@@ -91,7 +92,9 @@ const services: readonly ServiceCard[] = [
 
 // Moscow time, in minutes after midnight. Segments start at a report or observation.
 const chartStart = 2 * 60 + 50
-const chartEnd = 20 * 60 + 45
+const firstDnsObservation = 23 * 60 + 36
+const eveningCheck = 23 * 60 + 54
+const incidentMidnight = Date.parse('2026-11-02T00:00:00+03:00')
 const morningReport = 10 * 60 + 35
 const providerUpdate = 15 * 60 + 43
 type Phase = readonly [
@@ -124,8 +127,8 @@ type ServiceLog = {
 const timeline: readonly ServiceLog[] = [
   {
     id: 'panel',
-    name: 'Панель и A-записи',
-    phases: [[chartStart, 'down', 'Панель · тайм-аут в 20:20']],
+    name: 'Панель и API',
+    phases: [[chartStart, 'down', 'Панель и API · тайм-аут в 23:54']],
     entries: [
       [
         morningReport,
@@ -139,12 +142,21 @@ const timeline: readonly ServiceLog[] = [
         'Собственный замер из одной сети: DNS вернул IP панели, но HTTPS-запрос по этому адресу не получил ответа за 8 секунд. Методика и результат приведены в контрольной проверке.',
         [['Контрольная проверка', '#panel-check']],
       ],
+      [
+        eveningCheck,
+        'HTTPS · одна сеть',
+        'cp.beget.com и api.beget.com не дали HTTP-ответа за 6 секунд. Возможность войти и изменить записи не подтверждена.',
+        [],
+      ],
     ],
   },
   {
     id: 'dns',
     name: 'DNS доменов',
-    phases: [[chartStart, 'down', 'Со слов Beget, идут работы']],
+    phases: [
+      [chartStart, 'down', 'Со слов Beget, идут работы'],
+      [firstDnsObservation, 'partial', '23:36 · оба NS ответили для beget.ru'],
+    ],
     entries: [
       [
         morningReport,
@@ -158,6 +170,18 @@ const timeline: readonly ServiceLog[] = [
         'Beget поставил восстановление NS на первое место и оценил работы в 4–5 часов с момента публикации.',
         [official],
       ],
+      [
+        firstDnsObservation,
+        'Замер диагностики сайта',
+        'ns1.beget.ru и ns2.beget.ru вернули для beget.ru адрес 193.168.47.254 с TTL 300 секунд. Это первый такой замер в сводке. Точное время возобновления ответов неизвестно.',
+        [],
+      ],
+      [
+        eveningCheck,
+        'Прямые запросы DNS · одна сеть',
+        'Оба NS (93.92.81.0 и 194.113.245.0) без рекурсии дали авторитетные ответы: beget.ru — 193.168.47.254 (TTL 300 с), radimax.ru — 45.130.41.93 (TTL 600 с).',
+        [],
+      ],
     ],
   },
   {
@@ -170,6 +194,12 @@ const timeline: readonly ServiceLog[] = [
         'Жалобы клиентов · редакция проверила отдельный сайт',
         'Клиенты сообщали о недоступности размещённых сайтов. Среди затронутых ресурсов упоминался «Честный знак».',
         [press, kod],
+      ],
+      [
+        eveningCheck,
+        'HTTPS · одна сеть',
+        'За 6 секунд ни beget.ru, ни radimax.ru не дали HTTP-ответа. По этому замеру нельзя установить, на каком этапе запрос прервался у остальных клиентов.',
+        [],
       ],
     ],
   },
@@ -262,10 +292,6 @@ function moscowTime(minute: number): string {
   )
 }
 
-function chartPosition(minute: number): string {
-  return ((minute - chartStart) / (chartEnd - chartStart)) * 100 + '%'
-}
-
 const events = [
   [
     '02:50',
@@ -302,68 +328,121 @@ const events = [
     'Beget',
     report,
   ],
+  [
+    '23:36',
+    'Оба проверенных NS ответили для beget.ru',
+    'Диагностика получила одну и ту же A-запись от обоих серверов.',
+    'Журнал DNS',
+    '#journal-dns',
+  ],
+  [
+    '23:54',
+    'DNS отвечает для двух доменов',
+    'При повторной проверке панель, API и оба проверенных сайта не дали HTTP-ответа за 6 секунд.',
+    'Результаты проверки',
+    '#evening-check',
+  ],
 ] as const
+
+const IncidentChart: React.FC = () => {
+  const [chartEnd, setChartEnd] = useState(eveningCheck)
+  useEffect(() => {
+    const update = () =>
+      setChartEnd(
+        Math.max(
+          eveningCheck,
+          Math.floor((Date.now() - incidentMidnight) / 60000),
+        ),
+      )
+    update()
+    const timer = window.setInterval(update, 60000)
+    return () => window.clearInterval(timer)
+  }, [])
+  const chartPosition = (minute: number): string =>
+    ((minute - chartStart) / (chartEnd - chartStart)) * 100 + '%'
+  const endLabel =
+    chartEnd < 1440
+      ? moscowTime(chartEnd)
+      : new Intl.DateTimeFormat('ru-RU', {
+          timeZone: 'Europe/Moscow',
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(incidentMidnight + chartEnd * 60000)
+  return (
+    <figure>
+      <figcaption>Последний замер · 2 ноября, 23:54 МСК</figcaption>
+      <div className="gantt-axis" aria-hidden="true">
+        <span>{moscowTime(chartStart)}</span>
+        {chartEnd < 2 * 1440 && (
+          <span className="midday" style={{ left: chartPosition(12 * 60) }}>
+            12:00
+          </span>
+        )}
+        <span>{endLabel}</span>
+      </div>
+      {timeline.map(({ id, name, phases }) => (
+        <a className="gantt-row" key={id} href={'#journal-' + id}>
+          <div className="gantt-name">
+            <strong>{name}</strong>
+            <small>{phases.at(-1)?.[2] ?? 'Нет данных'}</small>
+          </div>
+          <div className="track">
+            {phases.map(([start, state, description], index) => {
+              const time = moscowTime(start)
+              const label =
+                'С ' +
+                time +
+                ' · ' +
+                (state === 'down' ? 'доступность не подтверждена' : description)
+              return (
+                <span
+                  key={start}
+                  data-phase={state}
+                  role="img"
+                  aria-label={label}
+                  title={label}
+                  style={{
+                    left: chartPosition(start),
+                    right:
+                      'calc(100% - ' +
+                      chartPosition(phases[index + 1]?.[0] ?? chartEnd) +
+                      ')',
+                  }}
+                />
+              )
+            })}
+          </div>
+        </a>
+      ))}
+      <div className="legend">
+        <span data-phase="down">Сбой</span>
+        <span data-phase="partial">Частичная доступность подтверждена</span>
+        <span data-phase="up">Доступность подтверждена</span>
+      </div>
+      <p className="chart-note">
+        02:50 — начало роста{' '}
+        <a href="https://detector404.ru/beget">жалоб на Beget</a>. Шкала общая
+        для всех услуг. Цвет каждой полосы показывает последний известный статус
+        услуги до появления нового замера. ¹ С администрированием клиента.
+      </p>
+    </figure>
+  )
+}
 
 export const MainPageView: React.FC = () => (
   <MainPageViewStyled lang="ru">
     <header id="overview" tabIndex={-1}>
       <p className="label">Независимая сводка · 2 ноября 2026</p>
       <h1 tabIndex={-1}>Сбой Beget 2 ноября 2026 года</h1>
-      <figure>
-        <figcaption>Последний известный статус · 2 ноября, МСК</figcaption>
-        <div className="gantt-axis" aria-hidden="true">
-          <span>{moscowTime(chartStart)}</span>
-          <span style={{ left: chartPosition(12 * 60) }}>12:00</span>
-          <span>{moscowTime(chartEnd)}</span>
-        </div>
-        {timeline.map(({ id, name, phases }) => (
-          <a className="gantt-row" key={id} href={'#journal-' + id}>
-            <div className="gantt-name">
-              <strong>{name}</strong>
-              <small>{phases.at(-1)?.[2] ?? 'Нет данных'}</small>
-            </div>
-            <div className="track">
-              {phases.map(([start, state, description], index) => {
-                const time = moscowTime(start)
-                const label =
-                  'С ' +
-                  time +
-                  ' · ' +
-                  (state === 'down'
-                    ? 'доступность не подтверждена'
-                    : description)
-                return (
-                  <span
-                    key={start}
-                    data-phase={state}
-                    role="img"
-                    aria-label={label}
-                    title={label}
-                    style={{
-                      left: chartPosition(start),
-                      right:
-                        'calc(100% - ' +
-                        chartPosition(phases[index + 1]?.[0] ?? chartEnd) +
-                        ')',
-                    }}
-                  />
-                )
-              })}
-            </div>
-          </a>
-        ))}
-        <div className="legend">
-          <span data-phase="down">Сбой</span>
-          <span data-phase="partial">Частичная доступность подтверждена</span>
-          <span data-phase="up">Доступность подтверждена</span>
-        </div>
-        <p className="chart-note">
-          02:50 — начало роста{' '}
-          <a href="https://detector404.ru/beget">жалоб на Beget</a>. Шкала общая
-          для всех услуг. Красная полоса продолжается до подтверждения
-          доступности. ¹ С администрированием клиента.
-        </p>
-      </figure>
+      <IncidentChart />
+      <p>
+        Если ваш домен использует NS Beget, а сайт работает на доступном
+        стороннем хостинге, он уже может открываться по прежнему адресу. Для
+        этого достаточно, чтобы NS снова отдавали действующую запись. Менять её
+        не требуется.
+      </p>
     </header>
     <Diagnostics />
     <Recovery />
@@ -371,13 +450,22 @@ export const MainPageView: React.FC = () => (
       <p className="label">03 / Услуги</p>
       <h2>Что сломалось и когда ждать восстановления</h2>
       <p>
-        Срез на 20:20 МСК, 2 ноября. Утренние симптомы зафиксировали{' '}
+        Срез на 23:54 МСК, 2 ноября. Утренние симптомы зафиксировали{' '}
         <a href={observations}>«Код Дурова»</a> и{' '}
         <a href="https://www.computerra.ru/372724/krupnyj-sboj-beget-narushil-rabotu-sajtov-i-serverov/">
           «Компьютерра»
         </a>
         . Сроки и ход работ — по <a href={report}>сводке Beget в 15:43</a>.
       </p>
+      <aside id="evening-check">
+        <strong>Контрольная проверка · 23:54 МСК</strong>
+        <p>
+          Оба NS вернули адреса beget.ru и radimax.ru. Из той же сети
+          HTTPS-запросы к этим сайтам, панели и API Beget завершились без
+          HTTP-ответа за 6 секунд.{' '}
+          <a href="#journal-dns">Адреса NS и результаты DNS-запросов</a>.
+        </p>
+      </aside>
       <aside id="panel-check">
         <strong>Контрольная проверка · 20:20 МСК</strong>
         <p>
