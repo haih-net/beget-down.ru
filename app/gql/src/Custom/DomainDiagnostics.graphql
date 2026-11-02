@@ -1,0 +1,11 @@
+query domainDiagnostics($domain: String, $refresh: Boolean) {
+  domainDiagnostics(domain: $domain, refresh: $refresh) {
+    domain
+    checkedAt
+    checks {
+      label
+      state
+      detail
+    }
+  }
+}

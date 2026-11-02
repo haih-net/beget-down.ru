@@ -11,6 +11,8 @@ import { useSectionNavigation } from '../../components/SectionNavigation/useSect
 
 const homeSections = [
   { id: 'overview', label: 'Сводка' },
+  { id: 'diagnostics', label: 'Проверить домен' },
+  { id: 'recovery', label: 'Пути восстановления' },
   { id: 'services', label: 'Состояние услуг' },
   { id: 'history', label: 'Хронология' },
   { id: 'questions', label: 'Открытые вопросы' },

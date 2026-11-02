@@ -1,6 +1,7 @@
 import { builder } from './builder'
 import './statistics'
 import './types/PageError'
+import './types/Custom/DomainDiagnostics/resolvers/queries'
 
 import './types/User'
 import './types/EthAccount'

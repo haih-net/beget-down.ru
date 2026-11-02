@@ -1,3 +1,5 @@
+import { Diagnostics } from './Diagnostics'
+import { Recovery } from './Recovery'
 import type * as React from 'react'
 import { ServiceStatus } from './ServiceStatus'
 import { MainPageViewStyled } from './styles'
@@ -363,8 +365,10 @@ export const MainPageView: React.FC = () => (
         </p>
       </figure>
     </header>
+    <Diagnostics />
+    <Recovery />
     <section id="services" tabIndex={-1}>
-      <p className="label">01 / Услуги</p>
+      <p className="label">03 / Услуги</p>
       <h2>Что сломалось и когда ждать восстановления</h2>
       <p>
         Срез на 20:20 МСК, 2 ноября. Утренние симптомы зафиксировали{' '}
@@ -400,7 +404,7 @@ export const MainPageView: React.FC = () => (
       </div>
     </section>
     <section id="history" tabIndex={-1}>
-      <p className="label">02 / Хронология</p>
+      <p className="label">04 / Хронология</p>
       <h2>Как развивался сбой</h2>
       <p>2 ноября, время московское.</p>
       <ol>
@@ -422,7 +426,7 @@ export const MainPageView: React.FC = () => (
       </ol>
     </section>
     <section id="questions" tabIndex={-1}>
-      <p className="label">03 / Данные и обязательства</p>
+      <p className="label">05 / Данные и обязательства</p>
       <h2>Что ещё предстоит выяснить</h2>
       <dl>
         <dt>За какую дату сохранилась копия моего сайта?</dt>
@@ -450,7 +454,7 @@ export const MainPageView: React.FC = () => (
       <a href={report}>Официальное уведомление Beget</a>
     </section>
     <section id="journal" tabIndex={-1}>
-      <p className="label">04 / Журнал</p>
+      <p className="label">06 / Журнал</p>
       <h2>Журнал по услугам</h2>
       <p>Указано московское время публикации или собственного замера.</p>
       {timeline.map(({ id, name, entries }) => (

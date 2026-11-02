@@ -202,3 +202,53 @@ it('looks up the current page through GraphQL and persists tool calls and result
       .join('\n'),
   ).toContain(fixture.id)
 })
+
+it('checks the requested domain and reports the observation time', async () => {
+  const token = await chatStorage.issue()
+  const answer = await send(
+    token,
+    'Проверь текущее состояние beget.ru. Без Markdown, без обратных кавычек и пояснений. Верни только сырой JSON с полями domain и checkedAt из сегодняшнего замера.',
+    base + '/',
+  )
+  const logs = await chatStorage.read(token.split('.')[0])
+  expect(
+    logs
+      .filter((row) => row.role === 'tool_call')
+      .map((row) => JSON.parse(row.content).function.name),
+  ).toContain('diagnose_domain')
+  const observation = logs
+    .filter((row) => row.role === 'tool')
+    .map((row) => {
+      try {
+        return JSON.parse(row.content).result
+      } catch {
+        return null
+      }
+    })
+    .find((row) => row?.domain === 'beget.ru')
+  expect(observation?.checkedAt).toBeTruthy()
+  expect(answer).toEqual({
+    domain: 'beget.ru',
+    checkedAt: observation.checkedAt,
+  })
+})
+
+it('distinguishes a responding panel from confirmed execution of DNS changes', async () => {
+  const token = await chatStorage.issue()
+  const answer = await send(
+    token,
+    'Панель Beget вернула HTTP 200. Неясно, означает ли это, что смена NS моего домена завершится за обещанные 4–5 часов. Найди официальное сообщение Beget в интернете и укажи ссылку на источник. Верни сырой JSON без Markdown, без обратных кавычек и пояснений: httpProvesWrite и nsEstimateGuaranteesTransfer — два логических значения, source — URL найденного сообщения.',
+    base + '/',
+  )
+  expect(answer).toMatchObject({
+    httpProvesWrite: false,
+    nsEstimateGuaranteesTransfer: false,
+    source: expect.stringMatching(/^https?:\/\//),
+  })
+  const history = await chatStorage.read(token.split('.')[0])
+  expect(
+    history
+      .filter((row) => row.role === 'tool_call')
+      .map((row) => JSON.parse(row.content).function.name),
+  ).toContain('web_search')
+})

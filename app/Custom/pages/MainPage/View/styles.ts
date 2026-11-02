@@ -219,6 +219,46 @@ export const MainPageViewStyled = styled.div`
     background: #dcecf6;
     color: #24516c;
   }
+  .probe-actions {
+    display: flex;
+    align-items: end;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+  }
+  .probe-actions label {
+    display: grid;
+  }
+  .probe-actions input,
+  .probe-actions button,
+  .subscribe {
+    font: inherit;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid #65838b;
+    border-radius: 0.3rem;
+  }
+  .probe-actions button,
+  .subscribe {
+    background: #163340;
+    color: white;
+    cursor: pointer;
+  }
+  .subscribe {
+    margin-top: 1rem;
+  }
+  #diagnostics article {
+    overflow-wrap: anywhere;
+  }
+  .probe-state {
+    font-size: 0.85rem;
+    color: #425965;
+  }
+  [data-result='failed'] {
+    color: #963b2b;
+  }
+  [data-result='observed'] {
+    color: #086359;
+  }
   ol {
     list-style: none;
     padding: 0;
