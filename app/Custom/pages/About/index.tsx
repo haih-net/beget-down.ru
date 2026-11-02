@@ -1,7 +1,30 @@
 import type * as React from 'react'
 import { Link } from 'react-router'
 import { InformationPageStyled } from '../../components/InformationPage/styles'
+import { AboutDetailsStyled } from './styles'
 import portrait from './assets/Fi1osof.jpg'
+
+const questions = [
+  'Какие сайты и сервисы разработал Николай Ланец (Fi1osof)?',
+  'Какой у Николая Ланца (Fi1osof) опыт в fullstack-разработке?',
+]
+
+const searchUrl = (question: string): string =>
+  'https://www.google.com/search?' +
+  new URLSearchParams({ udm: '50', q: question })
+
+const askGoogle: React.SubmitEventHandler<HTMLFormElement> = (event) => {
+  event.preventDefault()
+  const form = event.currentTarget
+  const question = String(new FormData(form).get('q') ?? '').trim()
+  if (question) {
+    window.open(
+      searchUrl('Николай Ланец (Fi1osof). ' + question),
+      '_blank',
+      'noopener,noreferrer',
+    )
+  }
+}
 
 export const AboutPage: React.FC = () => (
   <InformationPageStyled>
@@ -30,6 +53,56 @@ export const AboutPage: React.FC = () => (
       рабочей копии больше нет, могу разработать сайт заново и начать с функций,
       от которых зависит работа бизнеса.
     </p>
+    <AboutDetailsStyled>
+      <div className="one-day">
+        <p>
+          Разрабатываю сайты с нуля — от одного дня, в зависимости от сложности
+          и объёма.
+        </p>
+        <strong>Я и этот сайт за один день сделал</strong>
+        <Link to="/services/new-site">Срочная разработка сайта →</Link>
+      </div>
+      <section aria-labelledby="ask-google">
+        <h2 id="ask-google">
+          Есть вопросы, но не доверяете мне? Спросите у Google
+        </h2>
+        <p>
+          Выберите вопрос или задайте свой. Ответ откроется в новой вкладке
+          Google в режиме ИИ.
+        </p>
+        <div className="questions">
+          {questions.map((question) => (
+            <a
+              key={question}
+              href={searchUrl(question)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {question} <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+        <form
+          action="https://www.google.com/search"
+          target="_blank"
+          rel="noopener noreferrer"
+          onSubmit={askGoogle}
+        >
+          <input type="hidden" name="udm" value="50" />
+          <label htmlFor="google-question">Ваш вопрос о Николае Ланце</label>
+          <div className="query">
+            <input
+              id="google-question"
+              name="q"
+              required
+              pattern=".*\S.*"
+              placeholder="Какие задачи он решал для интернет-магазинов?"
+            />
+            <button type="submit">Спросить у Google ↗</button>
+          </div>
+        </form>
+      </section>
+    </AboutDetailsStyled>
     <Link to="/services">Посмотреть услуги</Link>
   </InformationPageStyled>
 )
