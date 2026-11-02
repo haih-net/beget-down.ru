@@ -1,4 +1,5 @@
 import { styled } from '@linaria/react'
+import { ServiceStatus } from './ServiceStatus'
 
 export const MainPageViewStyled = styled.div`
   max-width: 68rem;
@@ -210,15 +211,11 @@ export const MainPageViewStyled = styled.div`
     border-radius: 1rem;
     padding: 0.2rem 0.7rem;
   }
-  [data-status='Нет ответа при проверке'] {
+  [data-status='${ServiceStatus.NoResponse}'] {
     background: #ffe2de;
     color: #842e26;
   }
-  [data-status='Восстановлены'] {
-    background: #d9f1e6;
-    color: #17553e;
-  }
-  [data-status='Нет отдельной сводки'] {
+  [data-status='${ServiceStatus.NoInformation}'] {
     background: #dcecf6;
     color: #24516c;
   }
