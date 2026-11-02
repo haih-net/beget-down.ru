@@ -7,18 +7,6 @@ export const HeaderStyled = styled.header`
   z-index: 300;
   background: ${theme.backgrounds.page};
   border-bottom: 1px solid ${theme.colors.border};
-  .header-actions {
-    display: grid;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  .header-actions .account-dropdown {
-    position: static;
-    min-width: 0;
-  }
-  .header-actions .ai-button {
-    margin: 0;
-  }
   .header-inner {
     max-width: 1328px;
     margin: auto;

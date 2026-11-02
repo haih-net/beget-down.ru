@@ -6,7 +6,6 @@ import type { PageSection } from './index'
 interface SectionNavigationOptions {
   sections: readonly PageSection[]
   label: string
-  actions: React.ReactNode
 }
 
 interface SectionNavigationResult {
@@ -18,7 +17,6 @@ interface SectionNavigationResult {
 export const useSectionNavigation = ({
   sections,
   label,
-  actions,
 }: SectionNavigationOptions): SectionNavigationResult => {
   const [active, setActive] = useState(0)
   const [expanded, setExpanded] = useState(false)
@@ -142,8 +140,6 @@ export const useSectionNavigation = ({
         navigationRef={navigationRef}
         toggleRef={toggleRef}
         onToggle={toggleNavigation}
-        actions={actions}
-        onClose={closeNavigation}
         onKeyDown={closeOnEscape}
         onSelect={navigateToSection}
       />

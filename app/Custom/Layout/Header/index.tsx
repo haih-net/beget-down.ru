@@ -7,27 +7,6 @@ import { SignOutButton } from '../../components/Auth/SignOutButton'
 import { theme } from '../../theme'
 import { useAppContext } from '../../hooks/useAppContext'
 
-import { useSectionNavigation } from '../../components/SectionNavigation/useSectionNavigation'
-
-const homeSections = [
-  { id: 'overview', label: 'Сводка' },
-  { id: 'diagnostics', label: 'Проверить домен' },
-  { id: 'recovery', label: 'Пути восстановления' },
-  { id: 'services', label: 'Состояние услуг' },
-  { id: 'history', label: 'Хронология' },
-  { id: 'questions', label: 'Открытые вопросы' },
-  { id: 'journal', label: 'Журнал по услугам' },
-] as const
-
-const HomeMenu: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { navigation } = useSectionNavigation({
-    sections: homeSections,
-    label: 'Разделы главной',
-    actions: children,
-  })
-  return navigation
-}
-
 export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggle = useRef<HTMLButtonElement>(null)
@@ -125,6 +104,12 @@ export const Header: React.FC = () => {
 
   const actions = (
     <>
+      <Link to="/services" onClick={closeMenu}>
+        Услуги
+      </Link>
+      <Link to="/about" onClick={closeMenu}>
+        Обо мне
+      </Link>
       {/* <Link
             to="/users"
             onClick={closeMenu}
@@ -140,7 +125,7 @@ export const Header: React.FC = () => {
         onClick={handleFeedback}
         disabled={!openFeedback}
       >
-        Написать
+        Обратная связь
       </button>
       {location.pathname === '/ai' ? (
         <Link to="/ai" className="ai-button" onClick={closeMenu}>
@@ -185,11 +170,10 @@ export const Header: React.FC = () => {
               <SignOutButton variant="ghost" />
             </div>
           </details>
-        ) : (
-          <Link className="signin-link" to="/signin" onClick={closeMenu}>
-            Войти
-          </Link>
-        ))}
+        ) : // <Link className="signin-link" to="/signin" onClick={closeMenu}>
+        //   Войти
+        // </Link>
+        null)}
     </>
   )
   return (
@@ -198,46 +182,38 @@ export const Header: React.FC = () => {
         <div>
           <Link to={'/'}>Главная</Link>
         </div>
-        {location.pathname === '/' ? (
-          <HomeMenu>{actions}</HomeMenu>
-        ) : (
-          <>
-            <button
-              ref={toggle}
-              type="button"
-              className="menu-toggle"
-              aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
-              aria-expanded={isOpen}
-              aria-controls="main-navigation"
-              onClick={toggleMenu}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                aria-hidden="true"
-              >
-                <path
-                  d={
-                    isOpen ? 'M18 6 6 18M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'
-                  }
-                />
-              </svg>
-            </button>
-            <nav
-              id="main-navigation"
-              aria-label="Основная навигация"
-              data-open={isOpen}
-              onBlur={handleBlur}
-            >
-              {actions}
-            </nav>
-          </>
-        )}
+        <button
+          ref={toggle}
+          type="button"
+          className="menu-toggle"
+          aria-label={isOpen ? 'Закрыть меню' : 'Открыть меню'}
+          aria-expanded={isOpen}
+          aria-controls="main-navigation"
+          onClick={toggleMenu}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path
+              d={isOpen ? 'M18 6 6 18M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+            />
+          </svg>
+        </button>
+        <nav
+          id="main-navigation"
+          aria-label="Основная навигация"
+          data-open={isOpen}
+          onBlur={handleBlur}
+        >
+          {actions}
+        </nav>
       </div>
     </HeaderStyled>
   )

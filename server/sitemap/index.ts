@@ -1,3 +1,4 @@
+import { services } from '../../app/Custom/pages/Services/catalog'
 import type { Express, Request, Response } from 'express'
 import { db } from '../database'
 
@@ -50,7 +51,16 @@ async function generateSitemap(req: Request, res: Response): Promise<void> {
     )
     .whereNot('visibility', 'unpublished')
     .orderBy('updatedAt', 'desc')
-  const xml = generateUrls([{ uri: '/' }, ...concepts], origin)
+  const xml = generateUrls(
+    [
+      { uri: '/' },
+      { uri: '/about' },
+      { uri: '/services' },
+      ...services.map((service) => ({ uri: '/services/' + service.slug })),
+      ...concepts,
+    ],
+    origin,
+  )
   res.set('Cache-Control', 'no-store').type('application/xml').send(xml)
 }
 

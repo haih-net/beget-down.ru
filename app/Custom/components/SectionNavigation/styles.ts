@@ -10,9 +10,9 @@ export const NavigationStyled = styled.nav`
     margin-left: auto;
     align-items: center;
     justify-content: center;
-    width: 44px;
+    width: auto;
     height: 44px;
-    padding: 0;
+    padding: 0 1rem;
     border: 0;
     background: transparent;
     color: inherit;
@@ -146,16 +146,6 @@ export const NavigationStyled = styled.nav`
     }
     .section-list a {
       min-height: 34px;
-    }
-    .contents-panel .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 0;
-    }
-    .header-actions .account-dropdown {
-      position: absolute;
-      min-width: 220px;
     }
   }
   @media (prefers-reduced-motion: reduce) {

@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import type * as React from 'react'
 
 export const Recovery: React.FC = () => (
@@ -44,6 +45,16 @@ export const Recovery: React.FC = () => (
         Процедура смены NS
       </a>
       <a href="https://t.me/beget_official/572">Сводка Beget 2 ноября</a>
+    </div>
+    <h3>Сайта и резервной копии больше нет?</h3>
+    <p>
+      Если вы можете изменить IP домена, я могу разработать новый сайт с нуля и
+      подключить его к прежнему адресу. Срок разработки — от одного дня, в
+      зависимости от сложности и объёма.
+    </p>
+    <div className="sources">
+      <Link to="/services/new-site">Срочная разработка сайта</Link>
+      <Link to="/services">Все услуги</Link>
     </div>
   </section>
 )

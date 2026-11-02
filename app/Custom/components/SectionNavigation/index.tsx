@@ -1,5 +1,4 @@
 import type * as React from 'react'
-import { useCallback } from 'react'
 import { NavigationStyled } from './styles'
 
 export interface PageSection {
@@ -17,8 +16,6 @@ interface SectionNavigationProps {
   navigationRef: React.RefObject<HTMLElement | null>
   toggleRef: React.RefObject<HTMLButtonElement | null>
   onToggle: () => void
-  onClose: () => void
-  actions: React.ReactNode
   onKeyDown: React.KeyboardEventHandler<HTMLElement>
   onSelect: React.MouseEventHandler<HTMLAnchorElement>
 }
@@ -33,22 +30,9 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
   navigationRef,
   toggleRef,
   onToggle,
-  actions,
-  onClose,
   onKeyDown,
   onSelect,
 }) => {
-  const selectAction = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (
-        event.target instanceof Element &&
-        event.target.closest('a, button')
-      ) {
-        onClose()
-      }
-    },
-    [onClose],
-  )
   return (
     <NavigationStyled
       ref={navigationRef}
@@ -58,7 +42,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     >
       <button
         type="button"
-        aria-label={expanded ? 'Закрыть меню' : 'Открыть меню'}
+        aria-label={expanded ? 'Скрыть оглавление' : 'Открыть оглавление'}
         ref={toggleRef}
         className="contents-toggle"
         aria-expanded={expanded}
@@ -66,20 +50,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         disabled={!interactive}
         onClick={onToggle}
       >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          aria-hidden="true"
-        >
-          <path
-            d={expanded ? 'M6 6l12 12M18 6 6 18' : 'M3 6h18M3 12h18M3 18h18'}
-          />
-        </svg>
+        На этой странице
       </button>
       <div className="contents-panel" id={panelId}>
         <div className="section-list">
@@ -110,9 +81,6 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
             {String(active + 1).padStart(2, '0')}{' '}
             <span>/ {String(sections.length).padStart(2, '0')}</span>
           </p>
-        </div>
-        <div className="header-actions" onClick={selectAction}>
-          {actions}
         </div>
       </div>
     </NavigationStyled>
