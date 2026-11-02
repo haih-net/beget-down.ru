@@ -5,8 +5,9 @@ import { MainPage } from 'app/Custom/pages/MainPage'
 
 export const handle = {
   seo: {
-    title: 'haih.site',
-    description: '',
+    title: 'Сбой Beget 2 ноября 2026 года — хронология и статус сервисов',
+    description:
+      'Что происходило с сервисами Beget 2 ноября 2026 года. Хронология сбоя по московскому времени, сообщения провайдера и последние известные данные о восстановлении.',
     path: '/',
     image: undefined,
   },

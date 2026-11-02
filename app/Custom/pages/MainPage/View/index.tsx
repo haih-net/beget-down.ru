@@ -308,7 +308,7 @@ export const MainPageView: React.FC = () => (
   <MainPageViewStyled lang="ru">
     <header id="overview" tabIndex={-1}>
       <p className="label">Независимая сводка · 2 ноября 2026</p>
-      <h1 tabIndex={-1}>Сбой Beget</h1>
+      <h1 tabIndex={-1}>Сбой Beget 2 ноября 2026 года</h1>
       <figure>
         <figcaption>Последний известный статус · 2 ноября, МСК</figcaption>
         <div className="gantt-axis" aria-hidden="true">

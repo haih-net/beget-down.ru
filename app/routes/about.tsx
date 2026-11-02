@@ -4,7 +4,7 @@ import { AboutPage } from '../Custom/pages/About'
 
 export const meta: MetaFunction = () =>
   createSeoMeta({
-    title: 'Обо мне — Николай Ланец (Fi1osof)',
+    title: 'Николай Ланец (Fi1osof) — разработка и восстановление сайтов',
     description:
       'Fullstack-разработчик с опытом более 19 лет. Разработка, перенос и восстановление сайтов.',
     path: '/about',

@@ -1,3 +1,4 @@
+import { site, canonicalUrl } from '../../app/components/seo/site'
 import { services } from '../../app/Custom/pages/Services/catalog'
 import type { Express, Request, Response } from 'express'
 import { db } from '../database'
@@ -20,14 +21,14 @@ function escapeXml(value: string): string {
   })
 }
 
-function generateUrls(items: SitemapItem[], origin: string): string {
+function generateUrls(items: SitemapItem[]): string {
   const urls = new Map<string, SitemapItem>()
   for (const item of items) {
-    const url = new URL(item.uri, `${origin}/`)
-    if (url.origin !== origin) {
+    const url = URL.parse(item.uri, site.origin)
+    if (url?.origin !== site.origin) {
       continue
     }
-    urls.set(url.href, item)
+    urls.set(canonicalUrl(url.href), item)
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -35,13 +36,12 @@ ${Array.from(urls, ([url, item]) => {
   const lastmod = item.updatedAt
     ? `<lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>`
     : ''
-  return `  <url><loc>${escapeXml(url)}</loc>${lastmod}<priority>0.9</priority></url>`
+  return `  <url><loc>${escapeXml(url)}</loc>${lastmod}</url>`
 }).join('\n')}
 </urlset>`
 }
 
-async function generateSitemap(req: Request, res: Response): Promise<void> {
-  const origin = `${req.protocol}://${req.get('host')}`
+async function generateSitemap(_req: Request, res: Response): Promise<void> {
   const concepts = await db('KBConcept')
     .select<SitemapItem[]>(
       db.raw(`COALESCE(NULLIF("uri", ''),
@@ -51,16 +51,13 @@ async function generateSitemap(req: Request, res: Response): Promise<void> {
     )
     .whereNot('visibility', 'unpublished')
     .orderBy('updatedAt', 'desc')
-  const xml = generateUrls(
-    [
-      { uri: '/' },
-      { uri: '/about' },
-      { uri: '/services' },
-      ...services.map((service) => ({ uri: '/services/' + service.slug })),
-      ...concepts,
-    ],
-    origin,
-  )
+  const xml = generateUrls([
+    { uri: '/' },
+    { uri: '/about' },
+    { uri: '/services' },
+    ...services.map((service) => ({ uri: '/services/' + service.slug })),
+    ...concepts,
+  ])
   res.set('Cache-Control', 'no-store').type('application/xml').send(xml)
 }
 

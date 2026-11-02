@@ -5,14 +5,14 @@ import portrait from './assets/Fi1osof.jpg'
 
 export const AboutPage: React.FC = () => (
   <InformationPageStyled>
-    <h1 tabIndex={-1}>Обо мне</h1>
+    <h1 tabIndex={-1}>Николай Ланец (Fi1osof)</h1>
     <img
       src={portrait}
       width={220}
       height={256}
       alt="Николай Ланец (Fi1osof)"
     />
-    <h2>Николай Ланец · Fi1osof</h2>
+    <h2>Опыт разработки и восстановления сайтов</h2>
     <p>
       Я fullstack-разработчик с опытом более 19 лет. Работаю со всем проектом —
       от интерфейса, через который клиент оформляет заказ, до кода на сервере,

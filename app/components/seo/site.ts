@@ -1,8 +1,9 @@
 export const site = {
-  origin: 'http://localhost:3000',
-  name: '',
+  origin: 'https://beget-down.ru',
+  name: 'Сбой Beget',
   language: 'ru',
-  description: '',
+  description:
+    'Независимая сводка о сбое Beget, доступности сервисов и восстановлении сайтов.',
 }
 
 // Preserve the identity published at https://fi1osof.ru/about.

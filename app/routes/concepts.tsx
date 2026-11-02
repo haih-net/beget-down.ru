@@ -8,7 +8,8 @@ export const meta: MetaFunction = ({ error }) =>
     ? unavailableSeoMeta()
     : createSeoMeta({
         title: 'База знаний',
-        description: '',
+        description: 'Публикации базы знаний сайта «Сбой Beget».',
+        noindex: true,
         path: '/concepts',
       })
 export default ConceptsPage

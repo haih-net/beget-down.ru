@@ -31,8 +31,9 @@ export interface SeoHandle {
 }
 
 const notFound: SeoHeadersProps = {
-  title: 'Page not found — HAIH',
-  description: 'The requested page could not be found.',
+  title: 'Страница недоступна — Сбой Beget',
+  description:
+    'Запрошенная страница недоступна. Перейдите на главную, чтобы посмотреть сводку о сбое Beget.',
   noindex: true,
 }
 

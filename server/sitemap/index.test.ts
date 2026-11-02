@@ -16,6 +16,8 @@ const { query, database } = vi.hoisted(() => {
   return { query, database }
 })
 vi.mock('../database', () => ({ db: database }))
+import { site } from '../../app/components/seo/site'
+import { services } from '../../app/Custom/pages/Services/catalog'
 import { setupSitemap } from './index'
 
 let server: Server
@@ -43,27 +45,25 @@ describe('Динамическая карта сайта', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toContain('application/xml')
     const xml = await response.text()
-    expect(xml).toContain(`<loc>${origin.replace('http:', 'https:')}/</loc>`)
-    expect(xml).toContain(
-      `<loc>${origin.replace('http:', 'https:')}/example</loc>`,
-    )
+    expect(xml).toContain(`<loc>${site.origin}/</loc>`)
+    expect(xml).toContain(`<loc>${site.origin}/example</loc>`)
     expect(xml).toContain('<urlset')
     expect(xml).not.toContain('<sitemapindex')
   })
 
-  it('включает только главную, если концептов нет', async () => {
+  it('включает главную, страницу автора и каталог услуг, если концептов нет', async () => {
     query.orderBy.mockResolvedValueOnce([])
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
-    expect(xml).toContain(`<loc>${origin}/</loc>`)
-    expect(xml.match(/<url>/g)).toHaveLength(1)
+    expect(xml).toContain(`<loc>${site.origin}/</loc>`)
+    expect(xml.match(/<url>/g)).toHaveLength(3 + services.length)
     expect(xml).not.toContain('<lastmod>')
     expect(xml).not.toContain('/signin')
   })
 
   it('читает базу заново, фильтрует публикации и экранирует XML', async () => {
     query.orderBy.mockResolvedValueOnce([
-      { uri: '/city/test?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
-      { uri: '/city/test?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
+      { uri: '/city/a&b?ref=test', updatedAt: '2026-10-01T00:00:00Z' },
+      { uri: '/city/a&b?ref=test', updatedAt: '2026-10-01T00:00:00Z' },
       { uri: 'https://other.example/test' },
     ])
     const response = await fetch(`${origin}/sitemap.xml`)
@@ -71,13 +71,13 @@ describe('Динамическая карта сайта', () => {
     expect(response.headers.get('cache-control')).toBe('no-store')
     expect(database).toHaveBeenCalledWith('KBConcept')
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
-    expect(xml).toContain('/city/test?a=1&amp;b=2</loc>')
+    expect(xml).toContain('/city/a&amp;b</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
-    expect(xml.match(/<url>/g)).toHaveLength(2)
+    expect(xml.match(/<url>/g)).toHaveLength(4 + services.length)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(nextXml).toContain('/new-page</loc>')
-    expect(nextXml).not.toContain('/city/test')
+    expect(nextXml).not.toContain('/city/a&amp;b')
   })
 })

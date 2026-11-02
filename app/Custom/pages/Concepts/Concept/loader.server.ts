@@ -34,7 +34,9 @@ export async function loadConcept({ params, context }: LoaderFunctionArgs) {
       initialError,
       seo: {
         title: concept.name,
-        description: concept.description ?? '',
+        description:
+          concept.description?.trim() ||
+          `Материал базы знаний «Сбой Beget» — ${concept.name}.`,
         path: concept.uri,
       },
     }
