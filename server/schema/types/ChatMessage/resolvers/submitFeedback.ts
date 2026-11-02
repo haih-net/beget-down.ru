@@ -1,8 +1,6 @@
 import { ChatMessageSubmitFeedbackDataInput } from '../inputs'
 import { builder } from '../../../builder'
-import { createFeedback } from '../helpers/feedback'
-
-const feedback = createFeedback()
+import { feedback } from '../helpers/feedback'
 
 builder.mutationField('submitFeedback', (t) =>
   t.string({

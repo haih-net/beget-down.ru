@@ -1,26 +1,65 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type * as React from 'react'
-import { useDomainDiagnosticsQuery } from 'app/gql/generated'
+import {
+  useDomainDiagnosticsQuery,
+  useCreateFeedbackTokenMutation,
+  useSubmitDomainDiagnosticsMutation,
+} from 'app/gql/generated'
 import { Subscription } from './Subscription'
 
 export const Diagnostics: React.FC = () => {
   const [subscription, setSubscription] = useState(false)
-  const { data, loading, error, refetch } = useDomainDiagnosticsQuery({
+  const initial = useDomainDiagnosticsQuery({
     fetchPolicy: 'no-cache',
     ssr: false,
-    notifyOnNetworkStatusChange: true,
   })
-  const snapshot = data?.domainDiagnostics
+  const [issue] = useCreateFeedbackTokenMutation()
+  const [submit, result] = useSubmitDomainDiagnosticsMutation()
+  const [pending, setPending] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const inFlight = useRef(false)
+  const retry = useRef<{ domain: string; token: string } | null>(null)
+  const snapshot =
+    result.data?.submitDomainDiagnostics ?? initial.data?.domainDiagnostics
+  const loading = pending || initial.loading
+  const error = submitError || (!result.data && initial.error?.message)
   const onRefresh = useCallback(
-    (event: React.SubmitEvent<HTMLFormElement>) => {
+    async (event: React.SubmitEvent<HTMLFormElement>) => {
       event.preventDefault()
-      const domain = new FormData(event.currentTarget).get('domain')
-      void refetch({
-        domain: (typeof domain === 'string' && domain.trim()) || null,
-        refresh: true,
-      }).catch(() => undefined)
+      if (inFlight.current) {
+        return
+      }
+      const value = new FormData(event.currentTarget).get('domain')
+      const domain = (typeof value === 'string' && value.trim()) || 'beget.ru'
+      inFlight.current = true
+      setPending(true)
+      setSubmitError('')
+      try {
+        let token: string | undefined
+        if (domain.toLowerCase().replace(/\.$/, '') !== 'beget.ru') {
+          if (retry.current?.domain !== domain) {
+            token = (await issue()).data?.createChatToken ?? undefined
+            if (!token) {
+              throw new Error('Не удалось получить токен обратной связи.')
+            }
+            retry.current = { domain, token }
+          }
+          token = retry.current.token
+        }
+        await submit({ variables: { domain, token } })
+        retry.current = null
+      } catch (error) {
+        setSubmitError(
+          error instanceof Error
+            ? error.message
+            : 'Не удалось выполнить проверку.',
+        )
+      } finally {
+        inFlight.current = false
+        setPending(false)
+      }
     },
-    [refetch],
+    [issue, submit],
   )
   const open = useCallback(() => setSubscription(true), [])
   const close = useCallback(() => setSubscription(false), [])
@@ -47,7 +86,7 @@ export const Diagnostics: React.FC = () => {
         </button>
       </form>
       {loading && <p role="status">Идёт проверка…</p>}
-      {error && <p role="alert">{error.message}</p>}
+      {error && <p role="alert">{error}</p>}
       {snapshot && (
         <>
           <p>

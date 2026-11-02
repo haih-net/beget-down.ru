@@ -1,6 +1,7 @@
 import { builder } from '../../../../builder'
 import {
   diagnoseDomain,
+  submitDomainDiagnostics,
   type Probe,
   type Snapshot,
 } from '../helpers/diagnostics'
@@ -29,5 +30,14 @@ builder.queryField('domainDiagnostics', (t) =>
     args: { domain: t.arg.string(), refresh: t.arg.boolean() },
     resolve: (_root, args) =>
       diagnoseDomain(args.domain ?? undefined, args.refresh ?? false),
+  }),
+)
+
+builder.mutationField('submitDomainDiagnostics', (t) =>
+  t.field({
+    type: diagnostics,
+    args: { domain: t.arg.string({ required: true }), token: t.arg.string() },
+    resolve: (_root, { domain, token }, ctx) =>
+      submitDomainDiagnostics(domain, token, ctx.req),
   }),
 )

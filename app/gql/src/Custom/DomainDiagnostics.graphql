@@ -1,11 +1,21 @@
 query domainDiagnostics($domain: String, $refresh: Boolean) {
   domainDiagnostics(domain: $domain, refresh: $refresh) {
-    domain
-    checkedAt
-    checks {
-      label
-      state
-      detail
-    }
+    ...DomainDiagnosticsNoNesting
+  }
+}
+
+mutation submitDomainDiagnostics($domain: String!, $token: String) {
+  submitDomainDiagnostics(domain: $domain, token: $token) {
+    ...DomainDiagnosticsNoNesting
+  }
+}
+
+fragment DomainDiagnosticsNoNesting on DomainDiagnostics {
+  domain
+  checkedAt
+  checks {
+    label
+    state
+    detail
   }
 }

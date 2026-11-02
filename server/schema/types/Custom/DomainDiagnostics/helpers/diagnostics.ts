@@ -1,3 +1,5 @@
+import type { Request } from 'express'
+import { feedback } from '../../../ChatMessage/helpers/feedback'
 import { getDomain } from 'tldts'
 import { registrarInfo } from './registrar'
 import {
@@ -142,4 +144,19 @@ export async function diagnoseDomain(
   const task = run().finally(() => pending.delete(domain))
   pending.set(domain, task)
   return task
+}
+
+export async function submitDomainDiagnostics(
+  input: string,
+  token: string | null | undefined,
+  req: Request,
+): Promise<Snapshot> {
+  const domain = normalizeDomain(input)
+  if (domain !== 'beget.ru') {
+    if (!token) {
+      throw new Error('Не удалось получить токен обратной связи.')
+    }
+    await feedback.submit({ token, domain }, req)
+  }
+  return diagnoseDomain(domain, true)
 }

@@ -43,7 +43,10 @@ export function createFeedback(
     }
   }
   return {
-    async submit(input: FeedbackInput, req: Request): Promise<string> {
+    async submit(
+      input: FeedbackInput | { token: string; domain: string },
+      req: Request,
+    ): Promise<string> {
       const address = req.socket.remoteAddress || 'unknown'
       let chatId: string | null
       let channel: string | null
@@ -76,19 +79,29 @@ export function createFeedback(
         state = { address, issued: now() }
         states.set(chatId, state)
       }
-      const contacts = input.contacts.trim(),
-        message = input.message.trim()
-      if (
-        !contacts ||
-        contacts.length > 1000 ||
-        !message ||
-        message.length > 10000
-      ) {
-        fail(
-          'Заполните контакты (до 1000 символов) и сообщение (до 10000 символов).',
-        )
+      let content: string
+      if ('domain' in input) {
+        content = `Запрошена проверка домена: ${input.domain}`
+      } else {
+        const contacts = input.contacts.trim()
+        const message = input.message.trim()
+        if (
+          !contacts ||
+          contacts.length > 1000 ||
+          !message ||
+          message.length > 10000
+        ) {
+          fail(
+            'Заполните контакты (до 1000 символов) и сообщение (до 10000 символов).',
+          )
+        }
+        content = `Контакты:\n${contacts}\n\nСообщение:\n${message}`
       }
-      const payload = JSON.stringify({ contacts, message })
+      const payload = JSON.stringify(
+        'domain' in input
+          ? [input.domain]
+          : [input.contacts.trim(), input.message.trim()],
+      )
       if (state.payload && state.payload !== payload) {
         fail('Для нового сообщения откройте форму заново.')
       }
@@ -104,10 +117,7 @@ export function createFeedback(
       state.pending = (async () => {
         let created: boolean
         try {
-          created = await storage.appendFeedback(
-            chatId,
-            `Контакты:\n${contacts}\n\nСообщение:\n${message}`,
-          )
+          created = await storage.appendFeedback(chatId, content)
         } catch (error) {
           errorReporter.error('Feedback storage failed', error)
           return fail(
@@ -121,10 +131,7 @@ export function createFeedback(
             `${req.protocol}://${req.get('host') || 'unknown'}`
           void Promise.resolve()
             .then(() =>
-              send(
-                `Сайт: ${origin}\nДиалог: ${chatId}\nКонтакты:\n${contacts}\n\nСообщение:\n${message}`,
-                chatId,
-              ),
+              send(`Сайт: ${origin}\nДиалог: ${chatId}\n${content}`, chatId),
             )
             .catch((error) => {
               errorReporter.error('Feedback delivery failed', error)
@@ -138,3 +145,5 @@ export function createFeedback(
     },
   }
 }
+
+export const feedback = createFeedback()
