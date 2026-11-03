@@ -1,32 +1,30 @@
 import type * as React from 'react'
-import { Link } from 'react-router'
-import { InformationPageStyled } from '../../components/InformationPage/styles'
-import { useAppContext } from '../../hooks/useAppContext'
 import type { Service } from './catalog'
+import { NewSitePage } from './NewSite'
+import { DiagnosticsPage } from './Diagnostics'
+import { RestorePage } from './Restore'
+import { DnsPage } from './Dns'
+import { TemporaryPage } from './TemporaryPage'
+import { BackupsPage } from './Backups'
+import { StandbyPage } from './Standby'
 
 export const ServicePage: React.FC<{ service: Service }> = ({ service }) => {
-  const context = useAppContext()
-  return (
-    <InformationPageStyled>
-      <Link to="/services">← Все услуги</Link>
-      <h1 tabIndex={-1}>{service.title}</h1>
-      <p>{service.summary}</p>
-      <h2>Что понадобится</h2>
-      <p>{service.requirements}</p>
-      <h2>Как пройдёт работа</h2>
-      <p>{service.work}</p>
-      <h2>Что вы получите</h2>
-      <p>{service.result}</p>
-      <p>
-        <Link to="/about">Николай Ланец · 19+ лет в веб-разработке</Link>
-      </p>
-      <button
-        type="button"
-        disabled={!context?.openFeedback}
-        onClick={context?.openFeedback}
-      >
-        Обсудить задачу
-      </button>
-    </InformationPageStyled>
-  )
+  switch (service.slug) {
+    case 'new-site':
+      return <NewSitePage />
+    case 'diagnostics':
+      return <DiagnosticsPage />
+    case 'restore':
+      return <RestorePage />
+    case 'dns':
+      return <DnsPage />
+    case 'temporary-page':
+      return <TemporaryPage />
+    case 'backups':
+      return <BackupsPage />
+    case 'standby':
+      return <StandbyPage />
+    default:
+      throw new Error('Неизвестная услуга: ' + service.slug)
+  }
 }
