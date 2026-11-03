@@ -74,6 +74,19 @@ export const BlogStyled = styled.div`
   .article-body section {
     scroll-margin-top: 7rem;
   }
+  .telegram-screenshot {
+    margin: 1.5rem 0;
+  }
+  .telegram-screenshot img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  .telegram-screenshot figcaption {
+    margin-top: 0.75rem;
+    color: #546773;
+    font-size: 0.9rem;
+  }
   .article-discussion {
     margin-top: 2.5rem;
   }
