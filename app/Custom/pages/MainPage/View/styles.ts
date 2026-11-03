@@ -146,6 +146,9 @@ export const MainPageViewStyled = styled.div`
   [data-phase='partial'] {
     --phase: #ffb54d;
   }
+  [data-phase='reported'] {
+    --phase: #93b8e1;
+  }
   [data-phase='up'] {
     --phase: #65d8a2;
   }
@@ -218,6 +221,13 @@ export const MainPageViewStyled = styled.div`
     font-size: 0.8rem;
     border-radius: 1rem;
     padding: 0.2rem 0.7rem;
+  }
+  .gantt-name small[data-phase='up'] {
+    color: #65d8a2;
+  }
+  [data-status='${ServiceStatus.Available}'] {
+    background: #d9f5e6;
+    color: #145b3a;
   }
   [data-status='${ServiceStatus.NoResponse}'] {
     background: #ffe2de;
