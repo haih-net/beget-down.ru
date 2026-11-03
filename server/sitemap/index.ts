@@ -1,3 +1,4 @@
+import { posts } from '../../app/Custom/pages/Blog'
 import { site, canonicalUrl } from '../../app/components/seo/site'
 import { services } from '../../app/Custom/pages/Services/catalog'
 import type { Express, Request, Response } from 'express'
@@ -54,6 +55,8 @@ async function generateSitemap(_req: Request, res: Response): Promise<void> {
   const xml = generateUrls([
     { uri: '/' },
     { uri: '/about' },
+    { uri: '/blog' },
+    ...posts.map((post) => ({ uri: post.path })),
     { uri: '/services' },
     ...services.map((service) => ({ uri: '/services/' + service.slug })),
     ...concepts,

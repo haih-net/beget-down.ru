@@ -5,6 +5,40 @@ export const NavigationStyled = styled.nav`
   z-index: 10;
 
   font-family: Arial, Helvetica, sans-serif;
+  .contents-action-mobile {
+    padding: 0.6rem 1rem;
+  }
+  .contents-action-desktop {
+    display: none;
+  }
+  &[data-expanded='true'] .contents-action-mobile {
+    display: none;
+  }
+  &[data-expanded='true'] .contents-action-desktop {
+    display: block;
+    margin-top: 1rem;
+  }
+  .article-chat-button {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem;
+    border: 1px solid #163340;
+    border-radius: 0.35rem;
+    background: #163340;
+    color: white;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+  .article-chat-button:hover {
+    background: #24516c;
+  }
+  .article-chat-button:focus-visible {
+    outline: 3px solid #ce3023;
+    outline-offset: 3px;
+  }
+
   .contents-toggle {
     display: flex;
     margin-left: auto;
@@ -128,6 +162,14 @@ export const NavigationStyled = styled.nav`
     color: #807b72;
   }
   @media (min-width: 68rem) {
+    .contents-action-mobile {
+      display: none;
+    }
+    .contents-action-desktop {
+      display: block;
+      margin-top: 1rem;
+    }
+
     .contents-toggle {
       display: none;
     }

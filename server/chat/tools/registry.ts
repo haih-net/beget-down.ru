@@ -1,3 +1,4 @@
+import { listBlogPostsTool, readBlogPostsTool } from './blogPosts'
 import { domainDiagnosticsTool } from './domainDiagnostics'
 import type { AgentStorage } from '../agent/context'
 import { graphqlRequestTool } from './graphqlRequest'
@@ -9,6 +10,8 @@ import type { ChatTool, PreparedTool, ToolCall, ToolDefinition } from '../types'
 
 const tools: readonly ChatTool[] = [
   graphqlRequestTool,
+  listBlogPostsTool,
+  readBlogPostsTool,
   domainDiagnosticsTool,
   ...(hasSkills ? [readSkillTool] : []),
   webSearchTool,

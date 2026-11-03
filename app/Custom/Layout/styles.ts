@@ -29,6 +29,15 @@ export const CustomLayoutGridStyled = styled.section`
 export const CustomLayoutMainStyled = styled.main`
   flex: 1;
   min-width: 0;
+
+  ul,
+  ol {
+    margin-left: 16px;
+  }
+
+  p {
+    margin: 10px 0;
+  }
 `
 
 export const CustomLayoutStyled = styled.div`

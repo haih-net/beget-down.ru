@@ -21,8 +21,8 @@ export interface SeoHeadersProps {
     headline: string
     published: string
     modified?: string
-    version: string
-    commitUrl: string
+    version?: string
+    commitUrl?: string
   }
 }
 
@@ -116,9 +116,9 @@ export function createSeoMeta({
       '@type': 'Blog',
       '@id': blogId,
       url: `${site.origin}/blog`,
-      name: 'HAIH Blog',
+      name: 'Блог о сбое Beget',
       description:
-        'Observations, questions and conclusions from building HAIH, recorded against specific project revisions.',
+        'Хронология заявлений, личных прогнозов и проверок во время сбоя Beget.',
       inLanguage: site.language,
       isPartOf: { '@id': websiteId },
       ...(blog
@@ -154,7 +154,7 @@ export function createSeoMeta({
     graph.push({
       '@type': 'ItemList',
       '@id': `${canonical}#items`,
-      name: collection?.name ?? 'HAIH blog posts',
+      name: collection?.name ?? 'Записи блога о сбое Beget',
       numberOfItems: items.length,
       itemListElement: items.map((item, index) => ({
         '@type': 'ListItem',
@@ -210,13 +210,17 @@ export function createSeoMeta({
           }
         : {}),
       citation: article.commitUrl,
-      about: {
-        '@type': 'SoftwareSourceCode',
-        name: 'HAIH Site',
-        codeRepository: 'https://github.com/haih-net/haih.site',
-        version: article.version,
-        url: article.commitUrl,
-      },
+      ...(article.version && article.commitUrl
+        ? {
+            about: {
+              '@type': 'SoftwareSourceCode',
+              name: 'HAIH Site',
+              codeRepository: 'https://github.com/haih-net/haih.site',
+              version: article.version,
+              url: article.commitUrl,
+            },
+          }
+        : {}),
     })
   }
   const data: SchemaGraph = {

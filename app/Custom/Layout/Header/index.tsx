@@ -104,6 +104,9 @@ export const Header: React.FC = () => {
 
   const actions = (
     <>
+      <Link to="/blog" onClick={closeMenu}>
+        Журнал
+      </Link>
       <Link to="/services" onClick={closeMenu}>
         Услуги
       </Link>

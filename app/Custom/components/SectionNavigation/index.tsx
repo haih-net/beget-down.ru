@@ -8,6 +8,7 @@ export interface PageSection {
 
 interface SectionNavigationProps {
   sections: readonly PageSection[]
+  action?: React.ReactNode
   label: string
   panelId: string
   active: number
@@ -22,6 +23,7 @@ interface SectionNavigationProps {
 
 export const SectionNavigation: React.FC<SectionNavigationProps> = ({
   sections,
+  action,
   label,
   panelId,
   active,
@@ -81,8 +83,10 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
             {String(active + 1).padStart(2, '0')}{' '}
             <span>/ {String(sections.length).padStart(2, '0')}</span>
           </p>
+          {action && <div className="contents-action-desktop">{action}</div>}
         </div>
       </div>
+      {action && <div className="contents-action-mobile">{action}</div>}
     </NavigationStyled>
   )
 }
