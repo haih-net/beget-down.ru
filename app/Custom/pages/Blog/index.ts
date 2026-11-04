@@ -4,6 +4,7 @@ import { post as current } from './posts/CurrentStatus/data'
 import { post as incidentUpdate } from './posts/IncidentUpdate/data'
 import { post as telegramComments } from './posts/TelegramComments/data'
 import { post as hostingRecovery } from './posts/HostingRecovery/data'
+import { post as websiteGuarantees } from './posts/WebsiteGuarantees/data'
 import type { Post } from './interfaces'
 export const posts: Post[] = [
   statement,
@@ -12,4 +13,5 @@ export const posts: Post[] = [
   incidentUpdate,
   telegramComments,
   hostingRecovery,
+  websiteGuarantees,
 ].sort((left, right) => Date.parse(left.date) - Date.parse(right.date))

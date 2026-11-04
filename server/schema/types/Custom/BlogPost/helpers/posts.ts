@@ -6,6 +6,8 @@ import { canonicalUrl } from '../../../../../../app/components/seo/site'
 import type { BlogPostWhere } from '../inputs'
 
 const contentLoaders: Record<string, () => Promise<{ Content: FC }>> = {
+  'website-guarantees-november-4-1446': () =>
+    import('../../../../../../app/Custom/pages/Blog/posts/WebsiteGuarantees/Content'),
   'hosting-recovery-november-4-0100': () =>
     import('../../../../../../app/Custom/pages/Blog/posts/HostingRecovery/Content'),
   'telegram-comments-november-3-2100': () =>
