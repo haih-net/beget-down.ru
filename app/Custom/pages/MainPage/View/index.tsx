@@ -9,6 +9,8 @@ import { MainPageViewStyled } from './styles'
 const report = 'https://t.me/beget_official/572'
 const latestReport = 'https://t.me/beget_official/573'
 const analysisPath = '/blog/dns-management-november-3-1530'
+const recoveryReport = 'https://t.me/beget_newsfeed/56421'
+const recoveryPath = '/blog/hosting-recovery-november-4-0100'
 const observations = 'https://kod.ru/beget-krupnyi-sboi/amp'
 interface ServiceCard {
   name: string
@@ -49,9 +51,9 @@ const services: readonly ServiceCard[] = [
   {
     name: 'Сайты на хостинге',
     status: ServiceStatus.ProviderReport,
-    statusText: 'Beget сообщил о начале запуска',
+    statusText: 'Первые сайты работают — по Beget',
     detail:
-      'По предварительной оценке Beget, восстановлению подлежат почти 100% сайтов виртуального хостинга. В 13:28 beget.ru и radimax.ru не дали HTTP-ответа за 10 секунд из одной сети.',
+      '4 ноября в 01:00 Beget сообщил о запуске серверов виртуального хостинга: первые сайты уже открываются и работают. Перед запуском каждый сервер проверяют вручную.',
     forecast:
       'Почти 100% восстановимых сайтов не означает столько же уже работающих. Сроки по конкретным проектам и даты копий не названы.',
   },
@@ -85,9 +87,9 @@ const services: readonly ServiceCard[] = [
   {
     name: 'Dedicated — администрирование Beget',
     status: ServiceStatus.ProviderReport,
-    statusText: 'Проверка и ввод продолжаются — по Beget',
+    statusText: 'Начат запуск серверов — по Beget',
     detail:
-      'По сообщению Beget, большая часть данных на серверах под его администрированием сохранилась.',
+      '4 ноября в 01:00 Beget сообщил о начале запуска серверов со своим администрированием. Специалисты проверяют состояние, удаляют вредоносные механизмы и проверяют целостность данных и работу сайтов.',
     forecast:
       'Полное восстановление этой категории не заявлено. Срок доступа к конкретному серверу неизвестен.',
   },
@@ -135,6 +137,7 @@ const firstDnsObservation = 23 * 60 + 36
 const eveningCheck = 23 * 60 + 54
 const daytimeCheck = 1440 + 13 * 60 + 28
 const currentUpdate = 1440 + 15 * 60 + 30
+const recoveryUpdate = 2 * 1440 + 60
 const incidentMidnight = Date.parse('2026-11-02T00:00:00+03:00')
 const morningReport = 10 * 60 + 35
 const providerUpdate = 15 * 60 + 43
@@ -430,17 +433,44 @@ const latestPhases: Record<string, Phase> = {
   backups: [currentUpdate, 'reported', 'По Beget, сохранены; выдача закрыта'],
   databases: [currentUpdate, 'down', 'Копии конкретных БД не подтверждены'],
 }
+const recoverySource = [
+  'Сообщение Beget · 4 ноября, 01:00 МСК',
+  recoveryReport,
+] as const
+const recoveryEntry: Entry = [
+  recoveryUpdate,
+  'Заявление Beget · нового сетевого замера нет',
+  'Начат запуск серверов виртуального хостинга и серверов с администрированием Beget. По сообщению компании, первые сайты работают. Каждый сервер проходит ручную проверку, загрузку с загрузочного диска, очистку от вредоносных механизмов и проверку целостности данных; после запуска проверяют сайты. Работы выполняют параллельно.',
+  [recoverySource],
+]
 const timeline: readonly ServiceLog[] = [
   ...historicalTimeline.map((log) => ({
     ...log,
-    phases: [...log.phases, latestPhases[log.id]],
-    entries: [...log.entries, ...(newEntries[log.id] ?? [])],
+    phases: [
+      ...log.phases,
+      latestPhases[log.id],
+      ...(log.id === 'sites'
+        ? [
+            [
+              recoveryUpdate,
+              'partial',
+              'По Beget, первые сайты работают',
+            ] as const,
+          ]
+        : []),
+    ],
+    entries: [
+      ...log.entries,
+      ...(newEntries[log.id] ?? []),
+      ...(log.id === 'sites' ? [recoveryEntry] : []),
+    ],
   })),
   {
     id: 'dedicated-managed',
     name: 'Dedicated — управление Beget',
     phases: [
       [currentUpdate, 'reported', 'По Beget, проверка и ввод продолжаются'],
+      [recoveryUpdate, 'partial', 'По Beget, начат запуск серверов'],
     ],
     entries: [
       [
@@ -449,6 +479,7 @@ const timeline: readonly ServiceLog[] = [
         'На серверах под администрированием Beget большая часть данных сохранилась; проверка и ввод в работу продолжаются. Это отдельная категория от серверов под управлением пользователей.',
         [latest],
       ],
+      recoveryEntry,
     ],
   },
   {
@@ -615,15 +646,22 @@ const events = [
     'Подробный разбор и сообщение №573',
     analysisPath,
   ],
+  [
+    recoveryUpdate,
+    'Beget запускает серверы; первые сайты работают',
+    'Виртуальный хостинг и серверы с администрированием Beget запускаются после ручной проверки каждого сервера. По сообщению компании, первые сайты уже открываются.',
+    'Подробности ночного обновления',
+    recoveryPath,
+  ],
 ] as const
 
 const IncidentChart: React.FC = () => {
-  const [chartEnd, setChartEnd] = useState(currentUpdate)
+  const [chartEnd, setChartEnd] = useState(recoveryUpdate)
   useEffect(() => {
     const update = () =>
       setChartEnd(
         Math.max(
-          currentUpdate,
+          recoveryUpdate,
           Math.floor((Date.now() - incidentMidnight) / 60000),
         ),
       )
@@ -643,7 +681,7 @@ const IncidentChart: React.FC = () => {
   return (
     <figure>
       <figcaption>
-        Сводка · 3 ноября 2026, 15:30 МСК; сетевой замер — 13:28
+        Сводка · 4 ноября 2026, 01:00 МСК; сетевой замер — 3 ноября, 13:28
       </figcaption>
       <div className="gantt-axis" aria-hidden="true">
         <span>02.11 · {moscowTime(chartStart)}</span>
@@ -712,8 +750,17 @@ const IncidentChart: React.FC = () => {
 export const MainPageView: React.FC = () => (
   <MainPageViewStyled lang="ru">
     <header id="overview" tabIndex={-1}>
-      <p className="label">Независимая сводка · 3 ноября 2026, 15:30 МСК</p>
+      <p className="label">Независимая сводка · 4 ноября 2026, 01:00 МСК</p>
       <h1 tabIndex={-1}>Сбой Beget 2 ноября 2026 года</h1>
+      <p>
+        <strong>По сообщению Beget, первые сайты уже работают.</strong> Компания
+        начала запуск серверов виртуального хостинга и серверов со своим
+        администрированием. Каждый сервер проверяют вручную, очищают от
+        вредоносных механизмов и проверяют целостность данных перед запуском.
+      </p>
+      <p>
+        <Link to={recoveryPath}>Обновление от 4 ноября, 01:00 МСК →</Link>
+      </p>
       <p>
         <strong>DNS-записи уже можно менять.</strong> На{' '}
         <a href="http://domains.beget.ru/">domains.beget.ru</a> доступен
@@ -740,11 +787,13 @@ export const MainPageView: React.FC = () => (
       <p className="label">03 / Услуги</p>
       <h2>Что сломалось и когда ждать восстановления</h2>
       <p>
-        Срез на 3 ноября 2026 года, 15:30 МСК. Заявления о ходе восстановления —
-        по <a href={latestReport}>сообщению Beget №573</a>; редактирование DNS
-        подтверждено опытом автора. Сетевой замер выполнен в 13:28 из одной
-        сети. Сроки 10 и 24 часа отсчитываются от заявления провайдера, а не от
-        времени этой сводки.
+        Сводка обновлена 4 ноября 2026 года, 01:00 МСК по{' '}
+        <a href={recoveryReport}>сообщению о запуске серверов</a>. Остальные
+        статусы сохранены по <a href={latestReport}>сообщению Beget №573</a> и
+        предыдущим наблюдениям; редактирование DNS подтверждено опытом автора.
+        Последний сетевой замер выполнен 3 ноября в 13:28 из одной сети. Сроки
+        10 и 24 часа отсчитываются от заявления провайдера, а не от времени этой
+        сводки.
       </p>
       <aside id="daytime-check">
         <strong>Контрольная проверка · 3 ноября 2026, 13:28 МСК</strong>
