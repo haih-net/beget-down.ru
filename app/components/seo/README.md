@@ -23,3 +23,9 @@ When adding a public page, update its route handle, prerender list and `server/s
 Verification: `npm run types`, `npm run lint`, `npm test`, then `npm run test:integration`. The SEO tests inspect the built HTML rather than the Vite endpoint and cover canonical uniqueness, JSON-LD escaping, author/ORCID, snapshot evidence and the unknown-route fallback. `npm run e2e` checks browser navigation, hydration errors and metadata updates; structured data does not guarantee a search rich result.
 
 References: https://reactrouter.com/how-to/meta and https://developers.google.com/search/docs/appearance/structured-data/article
+
+## Услуги, цены и контакты
+
+Страницы услуг передают типизированные данные в `createSeoMeta`: WebPage → Service → Offer → PriceSpecification. Цена задаётся как `minPrice: 20000` в RUB, а не фиксированная стоимость. Каталог и цены используют OfferCatalog с теми же Service/Offer @id. Условия берутся из общего источника с видимым блоком цены. AboutPage и ContactPage ссылаются на того же Person, что статьи и provider услуг; контакт Telegram описан ContactPoint без выдуманного телефона и расписания. Все графы выводятся через Meta, отдельный JsonLd поверх них не добавляется.
+
+Проверять JSON-LD в HTML и после SPA-перехода; на неизвестной услуге не должно быть графа или canonical. Спецификации: https://schema.org/Service, https://schema.org/PriceSpecification, https://schema.org/ContactPage.

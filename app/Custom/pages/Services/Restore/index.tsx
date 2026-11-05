@@ -121,6 +121,11 @@ export const RestorePage: React.FC = () => (
           следующая авария не оставила вас без исходных материалов.
         </p>
       </section>
+      <p>
+        Если пригодной серверной копии нет, публичную часть сайта можно
+        воссоздать по сохранившимся снимкам.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>

@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
         setIsOpen(false)
       }
     }
-    const media = window.matchMedia(`(min-width: ${theme.breakpoints.sm}px)`)
+    const media = window.matchMedia(`(min-width: ${theme.breakpoints.lg}px)`)
     const onResize = () => {
       if (media.matches) {
         setIsOpen(false)
@@ -109,6 +109,12 @@ export const Header: React.FC = () => {
       </Link>
       <Link to="/services" onClick={closeMenu}>
         Услуги
+      </Link>
+      <Link to="/prices" onClick={closeMenu}>
+        Цены
+      </Link>
+      <Link to="/contacts" onClick={closeMenu}>
+        Контакты
       </Link>
       <Link to="/about" onClick={closeMenu}>
         Обо мне

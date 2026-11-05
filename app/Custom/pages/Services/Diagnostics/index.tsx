@@ -112,6 +112,11 @@ export const DiagnosticsPage: React.FC = () => (
           наблюдения и доступные варианты действий.
         </p>
       </section>
+      <p>
+        Если серверная копия недоступна, проверим возможность воссоздать
+        публичную часть сайта по сохранившимся снимкам.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>

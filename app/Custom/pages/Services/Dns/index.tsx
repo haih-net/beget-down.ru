@@ -120,6 +120,11 @@ export const DnsPage: React.FC = () => (
           согласуем наблюдение после переключения.
         </p>
       </section>
+      <p>
+        Если готовой площадки пока нет, один из вариантов — воссоздать сайт по
+        снимкам из открытых источников.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>

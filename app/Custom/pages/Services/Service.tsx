@@ -1,5 +1,6 @@
 import type * as React from 'react'
 import type { Service } from './catalog'
+import { WebArchivePage } from './WebArchive'
 import { NewSitePage } from './NewSite'
 import { DiagnosticsPage } from './Diagnostics'
 import { RestorePage } from './Restore'
@@ -10,6 +11,8 @@ import { StandbyPage } from './Standby'
 
 export const ServicePage: React.FC<{ service: Service }> = ({ service }) => {
   switch (service.slug) {
+    case 'web-archive':
+      return <WebArchivePage />
     case 'new-site':
       return <NewSitePage />
     case 'diagnostics':

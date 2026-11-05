@@ -109,6 +109,12 @@ export const BackupsPage: React.FC = () => (
           <Link to="/services/standby">резервную площадку и мониторинг</Link>.
         </p>
       </section>
+      <p>
+        После восстановления по снимкам важно сохранять уже новую реализацию и
+        её данные: публичный снимок не заменяет резервную копию приложения и
+        базы.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>

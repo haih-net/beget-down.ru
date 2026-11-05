@@ -121,6 +121,11 @@ export const StandbyPage: React.FC = () => (
           необходимости работают вместе.
         </p>
       </section>
+      <p>
+        Если прежний сайт приходится воссоздавать по снимкам, резервную площадку
+        готовим для новой реализации после её запуска.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>

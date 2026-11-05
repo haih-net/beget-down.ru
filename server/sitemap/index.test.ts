@@ -17,6 +17,7 @@ const { query, database } = vi.hoisted(() => {
 })
 vi.mock('../database', () => ({ db: database }))
 import { site } from '../../app/components/seo/site'
+import { posts } from '../../app/Custom/pages/Blog'
 import { services } from '../../app/Custom/pages/Services/catalog'
 import { setupSitemap } from './index'
 
@@ -55,7 +56,7 @@ describe('Динамическая карта сайта', () => {
     query.orderBy.mockResolvedValueOnce([])
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(xml).toContain(`<loc>${site.origin}/</loc>`)
-    expect(xml.match(/<url>/g)).toHaveLength(3 + services.length)
+    expect(xml.match(/<url>/g)).toHaveLength(6 + posts.length + services.length)
     expect(xml).not.toContain('<lastmod>')
     expect(xml).not.toContain('/signin')
   })
@@ -73,7 +74,7 @@ describe('Динамическая карта сайта', () => {
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
     expect(xml).toContain('/city/a&amp;b</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
-    expect(xml.match(/<url>/g)).toHaveLength(4 + services.length)
+    expect(xml.match(/<url>/g)).toHaveLength(7 + posts.length + services.length)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()

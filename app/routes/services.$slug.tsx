@@ -4,6 +4,7 @@ import {
   type MetaFunction,
 } from 'react-router'
 import { services } from '../Custom/pages/Services/catalog'
+import { serviceOffers } from '../Custom/pages/Services/seo'
 import { ServicePage } from '../Custom/pages/Services/Service'
 import { createSeoMeta, unavailableSeoMeta } from '../components/seo/SeoHeaders'
 
@@ -18,9 +19,15 @@ export const meta: MetaFunction<typeof loader> = ({ loaderData, error }) =>
   error || !loaderData
     ? unavailableSeoMeta()
     : createSeoMeta({
-        title: loaderData.title,
+        title: loaderData.seoTitle ?? loaderData.title,
         description: loaderData.summary,
         path: '/services/' + loaderData.slug,
+        serviceOffers: serviceOffers([loaderData]),
+        breadcrumbs: [
+          { name: 'Главная', path: '/' },
+          { name: 'Услуги', path: '/services' },
+          { name: loaderData.title, path: '/services/' + loaderData.slug },
+        ],
       })
 
 export default function ServiceRoute() {

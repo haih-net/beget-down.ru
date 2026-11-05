@@ -55,6 +55,8 @@ async function generateSitemap(_req: Request, res: Response): Promise<void> {
   const xml = generateUrls([
     { uri: '/' },
     { uri: '/about' },
+    { uri: '/prices' },
+    { uri: '/contacts' },
     { uri: '/blog' },
     ...posts.map((post) => ({ uri: post.path })),
     { uri: '/services' },

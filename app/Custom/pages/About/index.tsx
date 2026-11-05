@@ -103,6 +103,17 @@ export const AboutPage: React.FC = () => (
         </form>
       </section>
     </AboutDetailsStyled>
+    <p>
+      Восстанавливаю сайты по снимкам из открытых источников: заново
+      программирую страницы с сохранением внешнего вида, основных функций и
+      доступного наполнения. Разработка — от одного дня, объём и срок обсуждаем
+      индивидуально.
+    </p>
+    <p>
+      <Link to="/services/web-archive">Восстановление из веб-архива</Link> ·{' '}
+      <Link to="/prices">Проект от 20 000 ₽</Link> ·{' '}
+      <Link to="/contacts">Связаться со мной</Link>
+    </p>
     <Link to="/services">Посмотреть услуги</Link>
   </InformationPageStyled>
 )

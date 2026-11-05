@@ -1,11 +1,16 @@
 import { Meta, type MetaDescriptor } from 'react-router'
 
 import type { SchemaGraph, SchemaNode } from '../JsonLd/types'
+import { serviceNodes, type ServiceOffers } from '../JsonLd/services'
 import { author, canonicalUrl, site } from '../site'
 
 export interface SeoHeadersProps {
   title: string
   description: string
+  pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage'
+  serviceOffers?: ServiceOffers
+  offerCatalog?: boolean
+  contact?: { url: string; name: string }
   path?: string
   noindex?: boolean
   image?: { src: string; alt: string; width: number; height: number }
@@ -56,6 +61,10 @@ export function createSeoMeta({
   collection,
   blog,
   article,
+  pageType,
+  serviceOffers,
+  offerCatalog = false,
+  contact,
 }: SeoHeadersProps): MetaDescriptor[] {
   const canonical =
     path === undefined || noindex ? undefined : canonicalUrl(path)
@@ -69,12 +78,15 @@ export function createSeoMeta({
           '@type': 'WebSite',
           '@id': websiteId,
           name: site.name,
+          publisher: { '@id': author['@id'] },
           description: site.description,
           url: `${site.origin}/`,
           inLanguage: site.language,
         },
         {
-          '@type': collection || blog ? 'CollectionPage' : 'WebPage',
+          '@type':
+            pageType ??
+            (collection || blog || offerCatalog ? 'CollectionPage' : 'WebPage'),
           '@id': `${canonical}#webpage`,
           url: canonical,
           name: title,
@@ -97,9 +109,53 @@ export function createSeoMeta({
             ? { mainEntity: { '@id': `${canonical}#items` } }
             : {}),
           ...(article ? { mainEntity: { '@id': `${canonical}#article` } } : {}),
+          ...(pageType === 'AboutPage' || pageType === 'ContactPage'
+            ? { mainEntity: { '@id': author['@id'] } }
+            : {}),
+          ...(serviceOffers
+            ? {
+                mainEntity: {
+                  '@id': offerCatalog
+                    ? `${canonical}#offers`
+                    : `${canonical}#service`,
+                },
+              }
+            : {}),
         },
       ]
     : []
+  if (canonical) {
+    graph.push({
+      ...author,
+      ...(contact
+        ? { contactPoint: { '@id': `${site.origin}/contacts#telegram` } }
+        : {}),
+    })
+  }
+  if (canonical && contact) {
+    graph.push({
+      '@type': 'ContactPoint',
+      '@id': `${site.origin}/contacts#telegram`,
+      name: contact.name,
+      url: contact.url,
+      contactType: 'Обсуждение разработки и восстановления сайта',
+      availableLanguage: 'ru',
+    })
+  }
+  if (canonical && serviceOffers) {
+    graph.push(...serviceNodes(serviceOffers))
+    if (offerCatalog) {
+      graph.push({
+        '@type': 'OfferCatalog',
+        '@id': `${canonical}#offers`,
+        name: title,
+        numberOfItems: serviceOffers.items.length,
+        itemListElement: serviceOffers.items.map((service) => ({
+          '@id': `${canonicalUrl(service.path)}#offer`,
+        })),
+      })
+    }
+  }
   if (canonical && imageUrl && image) {
     graph.push({
       '@type': 'ImageObject',
@@ -182,7 +238,7 @@ export function createSeoMeta({
     })
   }
   if (canonical && article) {
-    graph.push(author, {
+    graph.push({
       '@type': 'BlogPosting',
       '@id': `${canonical}#article`,
       url: canonical,

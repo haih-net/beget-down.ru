@@ -6,6 +6,8 @@ export default {
   prerender: [
     '/',
     '/about',
+    '/prices',
+    '/contacts',
     '/blog',
     ...posts.map((post) => post.path),
     '/services',

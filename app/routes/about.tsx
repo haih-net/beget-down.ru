@@ -8,5 +8,10 @@ export const meta: MetaFunction = () =>
     description:
       'Fullstack-разработчик с опытом более 19 лет. Разработка, перенос и восстановление сайтов.',
     path: '/about',
+    pageType: 'AboutPage',
+    breadcrumbs: [
+      { name: 'Главная', path: '/' },
+      { name: 'Обо мне', path: '/about' },
+    ],
   })
 export default AboutPage

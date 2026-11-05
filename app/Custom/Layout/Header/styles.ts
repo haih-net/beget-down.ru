@@ -19,10 +19,10 @@ export const HeaderStyled = styled.header`
 
     @media (min-width: ${theme.breakpoints.xs}px) {
       padding: 16px 24px;
-      gap: 32px;
+      gap: 20px;
     }
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       min-height: 96px;
       padding: 18px 40px;
     }
@@ -41,7 +41,7 @@ export const HeaderStyled = styled.header`
     gap: 6px;
     font-size: 14px;
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       display: flex;
       position: static;
       padding: 0;
@@ -53,21 +53,21 @@ export const HeaderStyled = styled.header`
     }
 
     @media (min-width: ${theme.breakpoints.md}px) {
-      gap: 32px;
+      gap: 20px;
     }
   }
   #main-navigation[data-open='true'] {
     display: flex;
     flex-direction: column;
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       flex-direction: row;
     }
   }
   #main-navigation a {
     padding: 12px 0;
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       padding: 10px 0;
     }
   }
@@ -79,14 +79,14 @@ export const HeaderStyled = styled.header`
     margin-top: 10px;
     justify-content: center;
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       margin-top: 0;
       margin-left: 0;
       justify-content: flex-start;
     }
 
     @media (min-width: ${theme.breakpoints.md}px) {
-      margin-left: 32px;
+      margin-left: 12px;
     }
   }
   .menu-toggle {
@@ -100,7 +100,7 @@ export const HeaderStyled = styled.header`
     justify-content: center;
     color: inherit;
 
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       display: none;
     }
   }
@@ -169,7 +169,7 @@ export const HeaderStyled = styled.header`
     background: white;
     box-shadow: 0 12px 32px #1d30251a;
     min-width: 220px;
-    @media (min-width: ${theme.breakpoints.sm}px) {
+    @media (min-width: ${theme.breakpoints.lg}px) {
       position: absolute;
       right: 0;
       top: 100%;

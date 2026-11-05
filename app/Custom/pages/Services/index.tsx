@@ -1,3 +1,4 @@
+import { ProjectPrice } from '../../components/ProjectPrice'
 import { Compact } from 'app/Custom/components/ServiceMap/Compact'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -8,6 +9,7 @@ import { ServicesStyled } from './styles'
 
 const sections: readonly PageSection[] = [
   { id: 'choose', label: 'Как выбрать помощь' },
+  { id: 'web-archive', label: 'Из веб-архива' },
   { id: 'new-site', label: 'Новый сайт' },
   { id: 'diagnostics', label: 'Диагностика' },
   { id: 'restore', label: 'Восстановление копии' },
@@ -46,8 +48,10 @@ export const ServicesPage: React.FC = () => {
               <h3>Нужно вернуть работу сейчас</h3>
               <p>
                 Если причина неизвестна — начнём с диагностики. Есть копия —
-                проверим возможность восстановления. Копии нет — обсудим
-                временную страницу или новый сайт.
+                проверим возможность восстановления. Копии нет — проверим снимки
+                из открытых источников для восстановления внешнего вида и
+                содержания. Также можно запустить временную страницу или
+                разработать новый сайт.
               </p>
             </div>
             <div>
@@ -65,8 +69,41 @@ export const ServicesPage: React.FC = () => {
             обещать восстановление без проверки было бы преждевременно.
           </p>
         </section>
+        <section id="web-archive" tabIndex={-1} className="service-entry">
+          <span className="service-number">01 / Воссоздать по снимкам</span>
+          <h2>
+            <Link to="/services/web-archive">Восстановление из веб-архива</Link>
+          </h2>
+          <p>
+            После сбоя Beget или потери доступа к серверу резервной копии может
+            не оказаться. Снимки из открытых источников помогают увидеть прежний
+            сайт: его оформление, страницы, структуру и основные элементы.
+          </p>
+          <p>
+            По этим материалам оперативно запрограммирую сайт заново с
+            сохранением внешнего вида, основного функционала и наполнения — от
+            одного дня. Снимки могут быть сделаны несколько месяцев назад или
+            раньше и содержать не всю информацию. Обсудим актуализацию и
+            недостающие материалы от вас.
+          </p>
+          <p>
+            <strong>Результат:</strong> работающий сайт по сохранившимся
+            образцам в согласованном объёме. Закрытые данные и история заказов
+            требуют отдельного источника.
+          </p>
+          <Compact
+            label="Восстановление по снимкам"
+            problem="Сайт недоступен, бэкапа нет"
+            action="Изучаем снимки и программируем сайт заново"
+            result="Знакомый облик, основные функции и наполнение"
+          />
+          <Link className="service-link" to="/services/web-archive">
+            Как восстановить сайт по снимкам →
+          </Link>
+        </section>
+        <ProjectPrice />
         <section id="new-site" tabIndex={-1} className="service-entry">
-          <span className="service-number">01 / Запустить заново</span>
+          <span className="service-number">02 / Запустить заново</span>
           <h2>
             <Link to="/services/new-site">Срочная разработка сайта с нуля</Link>
           </h2>
@@ -99,7 +136,7 @@ export const ServicesPage: React.FC = () => {
           </Link>
         </section>
         <section id="diagnostics" tabIndex={-1} className="service-entry">
-          <span className="service-number">02 / Понять причину</span>
+          <span className="service-number">03 / Понять причину</span>
           <h2>
             <Link to="/services/diagnostics">
               Диагностика недоступности сайта
@@ -133,7 +170,7 @@ export const ServicesPage: React.FC = () => {
         </section>
         <section id="restore" tabIndex={-1} className="service-entry">
           <span className="service-number">
-            03 / Использовать сохранившееся
+            04 / Использовать сохранившееся
           </span>
           <h2>
             <Link to="/services/restore">
@@ -168,7 +205,7 @@ export const ServicesPage: React.FC = () => {
           </Link>
         </section>
         <section id="dns" tabIndex={-1} className="service-entry">
-          <span className="service-number">04 / Вернуть привычный адрес</span>
+          <span className="service-number">05 / Вернуть привычный адрес</span>
           <h2>
             <Link to="/services/dns">Переключение домена на новый сервер</Link>
           </h2>
@@ -200,7 +237,7 @@ export const ServicesPage: React.FC = () => {
         </section>
         <section id="temporary-page" tabIndex={-1} className="service-entry">
           <span className="service-number">
-            05 / Продолжать принимать обращения
+            06 / Продолжать принимать обращения
           </span>
           <h2>
             <Link to="/services/temporary-page">
@@ -236,7 +273,7 @@ export const ServicesPage: React.FC = () => {
         </section>
         <section id="backups" tabIndex={-1} className="service-entry">
           <span className="service-number">
-            06 / Сохранить возможность восстановления
+            07 / Сохранить возможность восстановления
           </span>
           <h2>
             <Link to="/services/backups">
@@ -270,7 +307,7 @@ export const ServicesPage: React.FC = () => {
           </Link>
         </section>
         <section id="standby" tabIndex={-1} className="service-entry">
-          <span className="service-number">07 / Сократить время простоя</span>
+          <span className="service-number">08 / Сократить время простоя</span>
           <h2>
             <Link to="/services/standby">Резервная площадка и мониторинг</Link>
           </h2>
@@ -301,7 +338,8 @@ export const ServicesPage: React.FC = () => {
             Как подготовить резерв →
           </Link>
         </section>
-        <ServiceContact />
+        <ProjectPrice />
+        <ServiceContact showPrice={false} />
       </ServicesStyled>
     </>
   )

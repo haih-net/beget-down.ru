@@ -103,6 +103,11 @@ export const TemporaryPage: React.FC = () => (
           канале.
         </p>
       </section>
+      <p>
+        Если нужно вернуть привычное оформление и содержание, можно восстановить
+        сайт по сохранившимся снимкам.{' '}
+        <Link to="/services/web-archive">Восстановление из веб-архива →</Link>
+      </p>
       <ServiceContact />
     </PageStyled>
   </ServiceLayout>
