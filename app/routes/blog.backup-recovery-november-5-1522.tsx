@@ -1,0 +1,9 @@
+import type { MetaFunction } from 'react-router'
+import { createSeoMeta, unavailableSeoMeta } from '../components/seo/SeoHeaders'
+import { articleSeo } from '../Custom/pages/Blog/seo'
+import { post } from '../Custom/pages/Blog/posts/BackupRecovery/data'
+export const handle = { seo: articleSeo(post) }
+export const meta: MetaFunction = ({ error }) =>
+  error ? unavailableSeoMeta() : createSeoMeta(handle.seo)
+// React Router требует экспорт по умолчанию на границе маршрута.
+export { BackupRecovery as default } from '../Custom/pages/Blog/posts/BackupRecovery'
